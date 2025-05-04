@@ -9,38 +9,43 @@ import SwiftUI
 
 struct TodoListView: View {
     
-    @StateObject var todoViewModel: TodoViewModel = TodoViewModel()
+    @EnvironmentObject var vm: TodoViewModel
     
     var body: some View {
-        
-        NavigationStack {
-            
-            List {
-                ForEach(todoViewModel.todoItems, id: \.id) { item in
-                    HStack {
-                        Image(systemName: item.isCompleted ? "checkmark.circle" : "circle")
-                        Text(item.title)
+        ZStack {
+            if vm.todoItems.isEmpty {
+                NoToDoItem()
+            } else {
+                List {
+                    ForEach(vm.todoItems, id: \.id) { item in
+                        ToDoRowView(item: item)
+                            .onTapGesture {
+                                withAnimation(.smooth, {
+                                    vm.updateItem(item: item)
+                                })
+                            }
                     }
+                    .onDelete(perform: vm.deleteItem)
+                    .onMove(perform: vm.moveItem)
                 }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
+        }
+        .onAppear() {
+            vm.getItem()
         }
         .navigationTitle("ToDo List")
         .toolbar {
-            ToolbarItem(id: "Add") {
-                
-                
-                Button("Add") {
-                    
+            ToolbarItem(placement: .topBarLeading) {
+                EditButton()
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink("Add") {
+                    AddNewToDo()
                 }
             }
         }
-        
-        
-
-
-        
-        
     }
 }
 
@@ -49,6 +54,7 @@ struct TodoListView: View {
         TodoListView()
     }
     .navigationTitle("To Do")
+    .environmentObject(TodoViewModel())
 
 }
 

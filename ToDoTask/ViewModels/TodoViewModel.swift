@@ -8,35 +8,48 @@
 import Foundation
 
 class TodoViewModel: ObservableObject {
-    
-    @Published var todoItems: [TodoItems] = [] {
+    let itemsKey: String = "items_list"
+    @Published var todoItems: [TodoItemsModel] = [] {
         didSet {
-            saveToDoItem()
+            saveItem()
         }
     }
     
     init() {
-        getToDoList()
+        getItem()
     }
     
-    func getToDoList() {
-        todoItems = [TodoItems(title: "Wake up", isCompleted: false),
-                     TodoItems(title: "Excerise", isCompleted: false),
-                     TodoItems(title: "Work", isCompleted: false),
-                     TodoItems(title: "Learning", isCompleted: false)]
+    func getItem() {
+        guard
+            let decodedData = UserDefaults.standard.data(forKey: itemsKey),
+            let items = try? JSONDecoder().decode([TodoItemsModel].self, from: decodedData)
+        else { return }
+        todoItems = items
     }
     
-    func addNewToDoItem() {
-        
+    func saveItem() {
+        if let encodeData = try? JSONEncoder().encode(todoItems) {
+            UserDefaults.standard.set(encodeData, forKey: itemsKey)
+        }
     }
     
-    func deleteToDoItem(indexSet: IndexSet) {
+    func newItem(newTitle: String) {
+        let newTodo = TodoItemsModel(title: newTitle, isCompleted: false)
+        todoItems.append(newTodo)
+    }
+    
+    func deleteItem(indexSet: IndexSet) {
         todoItems.remove(atOffsets: indexSet)
     }
     
-    func saveToDoItem() {
-        print("Item saved")
+    func moveItem(indexSet: IndexSet, to: Int) {
+        todoItems.move(fromOffsets: indexSet, toOffset: to)
     }
     
+    func updateItem(item: TodoItemsModel) {
+        if let index = todoItems.firstIndex(where: {$0.id == item.id }) {
+            todoItems[index] = item.updateCompletion()
+        }
+    }
     
 }
