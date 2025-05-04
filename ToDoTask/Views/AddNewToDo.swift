@@ -17,27 +17,10 @@ struct AddNewToDo: View {
 
     var body: some View {
         VStack {
-            TextField("Type Something here...", text: $todoTextfield)
-                .padding(.horizontal)
-                .frame(height: 55.0)
-                .frame(maxWidth: .infinity)
-                .background(Color(UIColor.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 9.0))
-                .padding(.horizontal)
+            setupTodoTextField
             
-            Button {
-                performSaveButton()
-            } label: {
-                Text("Save".uppercased())
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 55.0)
-                    .background(Color.purple)
-                    .foregroundStyle(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 9.0))
-                    .padding()
-            }
+            setupSaveButton
+            
             Spacer()
         }
         .navigationTitle("Add Item ➕")
@@ -72,4 +55,32 @@ struct AddNewToDo: View {
     .preferredColorScheme(.dark)
     .environmentObject(TodoViewModel())
 
+}
+
+extension AddNewToDo {
+    private var setupTodoTextField: some View {
+        TextField("Type Something here...", text: $todoTextfield)
+            .padding(.horizontal)
+            .frame(height: 55.0)
+            .frame(maxWidth: .infinity)
+            .background(Color(UIColor.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 9.0))
+            .padding(.horizontal)
+    }
+    
+    private var setupSaveButton: some View {
+        Button {
+            performSaveButton()
+        } label: {
+            Text("Save".uppercased())
+                .font(.headline)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity)
+                .frame(height: 55.0)
+                .background(Color.purple)
+                .foregroundStyle(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 9.0))
+                .padding()
+        }
+    }
 }

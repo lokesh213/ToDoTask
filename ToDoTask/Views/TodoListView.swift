@@ -15,6 +15,7 @@ struct TodoListView: View {
         ZStack {
             if vm.todoItems.isEmpty {
                 NoToDoItem()
+                    .transition(AnyTransition.opacity.animation(.easeIn))
             } else {
                 List {
                     ForEach(vm.todoItems, id: \.id) { item in
